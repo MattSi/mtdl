@@ -1,7 +1,12 @@
 package com.propig.mtdl;
 
+import com.propig.mtdl.http.DownloadCfg;
+import com.propig.mtdl.http.HttpHandler;
+
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLConnection;
 
 /**
  * Created with IntelliJ IDEA.
@@ -20,17 +25,14 @@ public class Main {
         return url;
     }
 
-
     public static void main(String[] args){
         if(args.length < 1){
             usage();
             System.exit(1);
         }
-
-
         Main jget = new Main();
         try{
-            jget.getUrl(args[0]);
+            jget.generateURL(args[0]);
         }
         catch (MalformedURLException e){
             System.out.println(e.getMessage());
@@ -38,9 +40,27 @@ public class Main {
         }
 
         if(jget.getProtocol().compareToIgnoreCase("http") == 0){
-            //Call http handler
-            HttpHandler handler = new HttpHandler(jget.getURL());
-            handler.testAnalyseURL();
+
+            //If config file doesnt exist, Call http handler
+            //Else Call
+            HttpHandler handler = null;
+            DownloadCfg cfg = HttpHandler.isCfgFileAvailable(jget.getURL());
+            if(cfg == null)
+                handler = new HttpHandler(jget.getURL());
+            else
+                handler = new HttpHandler(cfg);
+            handler.download();
+            //handler.testAnalyseURL();
+        }
+        else if(jget.getProtocol().compareToIgnoreCase("ftp") == 0){
+            try{
+                URL url = jget.getURL();
+                System.out.printf("%s\n", url.getFile());
+                URLConnection conn = url.openConnection();
+                conn.connect();
+                System.out.printf("%d\n", conn.getContentLength());
+            }
+            catch (IOException e){}
         }
 
     }
@@ -48,7 +68,7 @@ public class Main {
         return url.getProtocol();
     }
 
-    public void getUrl(String str) throws MalformedURLException{
+    public void generateURL(String str) throws MalformedURLException{
         //To do, if there is no protocol, add the default one, http
         url = new URL(str);
     }

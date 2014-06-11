@@ -110,7 +110,7 @@
   
   <target name="compile.module.mtdl.production" description="Compile module mtdl; production classes">
     <mkdir dir="${mtdl.output.dir}"/>
-    <javac destdir="${mtdl.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true">
+    <javac destdir="${mtdl.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" includeantruntime="off">
       <compilerarg line="${compiler.args.mtdl}"/>
       <bootclasspath refid="mtdl.module.bootclasspath"/>
       <classpath refid="mtdl.module.production.classpath"/>
