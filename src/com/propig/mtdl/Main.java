@@ -1,20 +1,15 @@
 package com.propig.mtdl;
 
-import com.propig.mtdl.http.DownloadCfg;
+import com.propig.mtdl.ftp.FtpHandler;
 import com.propig.mtdl.http.HttpHandler;
+
+import org.apache.commons.net.ftp.FTPClient;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLConnection;
 
-/**
- * Created with IntelliJ IDEA.
- * User: simian
- * Date: 10/28/13
- * Time: 2:24 PM
- * To change this template use File | Settings | File Templates.
- */
+
 public class Main {
     private URL url;
     private static void usage(){
@@ -25,9 +20,12 @@ public class Main {
         return url;
     }
 
-    public static void main(String[] args){
+    public static void main(String[] args) throws MalformedURLException{
         if(args.length < 1){
             usage();
+            String testUrl = "http://dl.bintray.com/oneclick/rubyinstaller/rubyinstaller-2.0.0-p481.exe?direct";
+            URL url = new URL(testUrl);
+            System.out.print(url.getPort());
             System.exit(1);
         }
         Main jget = new Main();
@@ -38,13 +36,14 @@ public class Main {
             System.out.println(e.getMessage());
             System.exit(-1);
         }
-
+	
         if(jget.getProtocol().compareToIgnoreCase("http") == 0){
 
             //If config file doesnt exist, Call http handler
             //Else Call
             HttpHandler handler = null;
-            DownloadCfg cfg = HttpHandler.isCfgFileAvailable(jget.getURL());
+            
+            DownloadCfg cfg = Handler.isCfgFileAvailable(jget.getURL());
             if(cfg == null)
                 handler = new HttpHandler(jget.getURL());
             else
@@ -53,16 +52,16 @@ public class Main {
             //handler.testAnalyseURL();
         }
         else if(jget.getProtocol().compareToIgnoreCase("ftp") == 0){
-            try{
-                URL url = jget.getURL();
-                System.out.printf("%s\n", url.getFile());
-                URLConnection conn = url.openConnection();
-                conn.connect();
-                System.out.printf("%d\n", conn.getContentLength());
-            }
-            catch (IOException e){}
+        	//FtpHandler handler = null;
+        	FtpHandler handler = null;
+        	DownloadCfg cfg = Handler.isCfgFileAvailable(jget.getURL());
+        	if(cfg == null)
+        		handler = new FtpHandler(jget.getURL());
+        	else
+        		handler = new FtpHandler(cfg);
+        	
+        	handler.Download();
         }
-
     }
     public String getProtocol(){
         return url.getProtocol();

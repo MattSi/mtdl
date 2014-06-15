@@ -3,16 +3,8 @@ package com.propig.mtdl.http;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.List;
-import java.util.Map;
 
-/**
- * Created with IntelliJ IDEA.
- * User: simian
- * Date: 10/28/13
- * Time: 9:08 AM
- * To change this template use File | Settings | File Templates.
- */
+
 public class DownloadWorker extends Thread {
     private String fileName = null;
     private long lowByte = 0;
@@ -37,7 +29,6 @@ public class DownloadWorker extends Thread {
     }
 
     private void doDownload(){
-
     }
 
     @Override

@@ -1,5 +1,8 @@
 package com.propig.mtdl.http;
 
+import com.propig.mtdl.DownloadCfg;
+import com.propig.mtdl.Handler;
+
 import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
@@ -7,11 +10,7 @@ import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class HttpHandler {
-    private long startTime = 0L;
-    private DownloadCfg cfg = null;
-    private boolean isContinue = false;
-
+public class HttpHandler extends Handler {
 
     class ExitHandler extends Thread{
         DownloadWorker [] threads = null;
@@ -75,8 +74,6 @@ public class HttpHandler {
                 speedSize += size;
                 cfg.partBytesGet[i] = size;
                 numOfThread++;
-                //System.out.printf("Thread %3d: begin byte %10d, end byte %10d, progress byte %10d\n",
-                  //      i, cfg.partArray[i*2], cfg.partArray[i*2 + 1], cfg.partBytesGet[i]);
             }
 
             long now = new Date().getTime();
@@ -225,43 +222,6 @@ public class HttpHandler {
         downloadFile();
     }
 
-
-    public static DownloadCfg isCfgFileAvailable(URL url){
-        String[] tmp = url.getPath().split("/");
-        String fileName = tmp[tmp.length - 1];
-        File fileConfig = new File(fileName+".cfg");
-        File f = new File(fileName);
-        ObjectInputStream ois = null;
-        DownloadCfg cfg = null;
-        try{
-            if(f.exists()){
-                if(fileConfig.exists()){
-                    ois = new ObjectInputStream(new FileInputStream(fileConfig));
-                    cfg = (DownloadCfg) ois.readObject();
-                    ois.close();
-                    if(f.length() == cfg.contentLength){
-                        return cfg;
-                    }
-                    else
-                        return null;
-                }
-                else
-                    return null;
-            }
-            else
-                return null;
-        }
-        catch (ClassNotFoundException e){
-            try{ois.close();}catch (IOException ex){}
-            fileConfig.delete();
-            return null;
-        }
-        catch (IOException e){
-            try{ois.close();}catch (IOException ex){}
-            fileConfig.delete();
-            return null;
-        }
-    }
 
     private void createCfg(URL url){
         if(url == null)

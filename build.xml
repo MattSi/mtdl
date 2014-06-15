@@ -1,172 +1,58 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project name="mtdl" default="all">
-  
-  
-  <property file="build.properties"/>
-  <!-- Uncomment the following property if no tests compilation is needed -->
-  <!-- 
-  <property name="skip.tests" value="true"/>
-   -->
-  
-  <!-- Compiler options -->
-  
-  <property name="compiler.debug" value="on"/>
-  <property name="compiler.generate.no.warnings" value="off"/>
-  <property name="compiler.args" value=""/>
-  <property name="compiler.max.memory" value="128m"/>
-  <patternset id="ignored.files">
-    <exclude name="**/CVS/**"/>
-    <exclude name="**/SCCS/**"/>
-    <exclude name="**/RCS/**"/>
-    <exclude name="**/rcs/**"/>
-    <exclude name="**/.DS_Store/**"/>
-    <exclude name="**/.svn/**"/>
-    <exclude name="**/.pyc/**"/>
-    <exclude name="**/.pyo/**"/>
-    <exclude name="**/*.pyc/**"/>
-    <exclude name="**/*.pyo/**"/>
-    <exclude name="**/.git/**"/>
-    <exclude name="**/*.hprof/**"/>
-    <exclude name="**/_svn/**"/>
-    <exclude name="**/.hg/**"/>
-    <exclude name="**/*.lib/**"/>
-    <exclude name="**/*~/**"/>
-    <exclude name="**/__pycache__/**"/>
-    <exclude name="**/.bundle/**"/>
-    <exclude name="**/*.rbc/**"/>
-  </patternset>
-  <patternset id="library.patterns">
-    <include name="*.zip"/>
-    <include name="*.apk"/>
-    <include name="*.war"/>
-    <include name="*.egg"/>
-    <include name="*.ear"/>
-    <include name="*.ane"/>
-    <include name="*.swc"/>
-    <include name="*.jar"/>
-  </patternset>
-  <patternset id="compiler.resources">
-    <exclude name="**/?*.java"/>
-    <exclude name="**/?*.form"/>
-    <exclude name="**/?*.class"/>
-    <exclude name="**/?*.groovy"/>
-    <exclude name="**/?*.scala"/>
-    <exclude name="**/?*.flex"/>
-    <exclude name="**/?*.kt"/>
-    <exclude name="**/?*.clj"/>
-  </patternset>
-  
-  <!-- Modules -->
-  
-  
-  <!-- Module mtdl -->
-  
-  <dirname property="module.mtdl.basedir" file="${ant.file}"/>
-  
-  
-  
-  <property name="compiler.args.mtdl" value="${compiler.args}"/>
-  
-  <property name="mtdl.output.dir" value="${module.mtdl.basedir}/out/production/mtdl"/>
-  <property name="mtdl.artifacts.dir" value="${module.mtdl.basedir}/out/artifacts/mtdl_jar"/>
-  <property name="mtdl.testoutput.dir" value="${module.mtdl.basedir}/out/test/mtdl"/>
-  
-  <path id="mtdl.module.bootclasspath">
-    <!-- Paths to be included in compilation bootclasspath -->
-  </path>
-  
-  <path id="mtdl.module.production.classpath"/>
-  
-  <path id="mtdl.runtime.production.module.classpath">
-    <pathelement location="${mtdl.output.dir}"/>
-  </path>
-  
-  <path id="mtdl.module.classpath">
-    <pathelement location="${mtdl.output.dir}"/>
-  </path>
-  
-  <path id="mtdl.runtime.module.classpath">
-    <pathelement location="${mtdl.testoutput.dir}"/>
-    <pathelement location="${mtdl.output.dir}"/>
-  </path>
-  
-  
-  <patternset id="excluded.from.module.mtdl">
-    <patternset refid="ignored.files"/>
-  </patternset>
-  
-  <patternset id="excluded.from.compilation.mtdl">
-    <patternset refid="excluded.from.module.mtdl"/>
-  </patternset>
-  
-  <path id="mtdl.module.sourcepath">
-    <dirset dir="${module.mtdl.basedir}">
-      <include name="src"/>
-    </dirset>
-  </path>
-  
-  
-  <target name="compile.module.mtdl" depends="compile.module.mtdl.production,compile.module.mtdl.tests" description="Compile module mtdl"/>
-  
-  <target name="compile.module.mtdl.production" description="Compile module mtdl; production classes">
-    <mkdir dir="${mtdl.output.dir}"/>
-    <javac destdir="${mtdl.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" includeantruntime="off">
-      <compilerarg line="${compiler.args.mtdl}"/>
-      <bootclasspath refid="mtdl.module.bootclasspath"/>
-      <classpath refid="mtdl.module.production.classpath"/>
-      <src refid="mtdl.module.sourcepath"/>
-      <patternset refid="excluded.from.compilation.mtdl"/>
-    </javac>
-    
-    <copy todir="${mtdl.output.dir}">
-      <fileset dir="${module.mtdl.basedir}/src">
-        <patternset refid="compiler.resources"/>
-        <type type="file"/>
-      </fileset>
-    </copy>
-  </target>
-  
-  <target name="compile.module.mtdl.tests" depends="compile.module.mtdl.production" description="compile module mtdl; test classes" unless="skip.tests"/>
-  
-  <target name="clean.module.mtdl" description="cleanup module">
-    <delete dir="${mtdl.output.dir}"/>
-    <delete dir="${mtdl.testoutput.dir}"/>
-    <delete dir="${mtdl.artifacts.dir}"/>
-  </target>
-  
-  <target name="init" description="Build initialization">
-    <!-- Perform any build initialization in this target -->
-  </target>
-  
-  <target name="clean" depends="clean.module.mtdl" description="cleanup all"/>
-  
-  <target name="build.modules" depends="init, clean, compile.module.mtdl" description="build all modules"/>
-  
-  <target name="init.artifacts">
-    <property name="artifacts.temp.dir" value="${basedir}/__artifacts_temp"/>
-    <property name="artifact.output.mtdl:jar" value="${basedir}/out/artifacts/mtdl_jar"/>
-    <mkdir dir="${artifacts.temp.dir}"/>
-    <property name="temp.jar.path.mtdl.jar" value="${artifacts.temp.dir}/mtdl.jar"/>
-  </target>
-  
-  <target name="artifact.mtdl:jar" depends="init.artifacts, compile.module.mtdl" description="Build &#39;mtdl:jar&#39; artifact">
-    <property name="artifact.temp.output.mtdl:jar" value="${artifacts.temp.dir}/mtdl_jar"/>
-    <mkdir dir="${artifact.temp.output.mtdl:jar}"/>
-    <jar destfile="${temp.jar.path.mtdl.jar}" duplicate="preserve" filesetmanifest="mergewithoutmain">
-      <zipfileset dir="${mtdl.output.dir}"/>
-    </jar>
-    <copy file="${temp.jar.path.mtdl.jar}" tofile="${artifact.temp.output.mtdl:jar}/mtdl.jar"/>
-  </target>
-  
-  <target name="build.all.artifacts" depends="artifact.mtdl:jar" description="Build all artifacts">
-    <mkdir dir="${artifact.output.mtdl:jar}"/>
-    <copy todir="${artifact.output.mtdl:jar}">
-      <fileset dir="${artifact.temp.output.mtdl:jar}"/>
-    </copy>
-    
-    <!-- Delete temporary files -->
-    <delete dir="${artifacts.temp.dir}"/>
-  </target>
-  
-  <target name="all" depends="build.modules, build.all.artifacts" description="build all"/>
+<project name="mtdl" default="all" basedir=".">
+	<description>
+		Multi-thread download tool
+	</description>
+	<property name="src" location="src"/>
+	<property name="out" location="out"/>
+	<property name="lib" location="lib"/>
+	<property name="bin" location="bin"/> <!-- eclipse only -->
+	<property name="scripts" location="scripts"/>
+	<property name="destjar" value="mtdl.jar"/>
+	<property name="outproduct" location="${out}/production"/>
+	<property name="artifact" location="${out}/artifact"/>
+	<property name="metadir" value="${src}/META-INF"/>
+	<property name="mainclass" value="com.propig.mtdl.Main"/>
+	
+	<path id="classpath" >
+		<fileset dir="${lib}">
+			<include name="**/*.jar"/>
+		</fileset>
+	</path>
+	<target name="init">
+		<mkdir dir="${out}"/>
+		<mkdir dir="${outproduct}"/>
+		<mkdir dir="${artifact}"/>
+	</target>
+	
+	<target name="compile" depends="init">
+		<javac srcdir="${src}" destdir="${outproduct}" includeantruntime="false" debug="true">
+			<classpath refid="classpath"></classpath>
+		</javac>
+		<copy todir="${bin}">
+			<fileset dir="${outproduct}" />
+		</copy>
+	</target>
+	
+	<target name="jar" depends="compile">
+		<pathconvert property="mf.classpath">
+			<path refid="classpath"></path>
+		</pathconvert>
+		<mkdir dir="${artifact}/lib"/>
+		<copy todir="${artifact}/lib">
+			<fileset dir="${lib}"/>
+		</copy>
+		<copy file="${scripts}/mtdl.bat" todir="${artifact}"/>
+		<jar destfile="${artifact}/bin/${destjar}" update="true" basedir="${outproduct}">			
+			<manifest >
+				<attribute name="Main-Class" value="${mainclass}" />				
+			<attribute name="Class-Path" value=".\lib\commons-net-3.3.jar"/> 
+			</manifest>
+		</jar>
+	</target>
+	
+	<target name="all" depends="compile, jar"></target>
+	<target name="clean">
+		<delete dir="${out}"/>
+		<delete dir="${bin}"/>
+	</target>
 </project>
